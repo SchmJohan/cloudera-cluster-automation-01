@@ -1,0 +1,57 @@
+- name: deploy cluster using template
+  hosts: cloudera_manager
+  become: yes
+  tasks:
+
+  - name: create /api directory for json templates used for cloudera api calls
+    file:
+      path: /api
+      state: directory
+      mode: 0755
+
+  - name: copy cluster template
+    template:
+      src: templates/cluster_template.json
+      dest: /api/cluster_template.json
+      mode: 0644
+
+  - name: slurp cluster_template.json file
+    slurp:
+      src: /api/cluster_template.json
+    register: cluster_template
+
+  - name: importing cluster template via cloudera manager api
+    uri:
+      url: "http://{{ groups['cloudera_manager'][0] }}:7180/api/v32/cm/importClusterTemplate"
+      method: POST
+      user: admin
+      password: admin
+      body: "{{ cluster_template['content'] | b64decode }}"
+      body_format: json
+      status_code: ['200','400']
+    register: cluster_import_response
+
+  - name: print api response
+    debug:
+      msg: "{{ cluster_import_response['json'] }}"
+
+  - name: check if import process has terminated
+    uri:
+      url: http://{{ groups['cloudera_manager'][0] }}:7180/api/v32/commands/{{ cluster_import_response['json']['id'] }}
+      method: GET
+      user: admin
+      password: admin
+    register: import_status_response
+    until: import_status_response['json']['active'] == false
+    retries: 60
+    delay: 20
+
+  - name: check if import process was successful
+    uri:
+      url: http://{{ groups['cloudera_manager'][0] }}:7180/api/v32/commands/{{ cluster_import_response['json']['id'] }}
+      method: GET
+      user: admin
+      password: admin
+    register: import_status_response
+    failed_when: import_status_response['json']['success'] != true
+

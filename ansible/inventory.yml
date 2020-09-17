@@ -1,0 +1,9 @@
+---
+all:
+  children:
+    cloudera_manager:
+      hosts:
+        <hostname>:
+          ansible_host: <ip_address>
+          ansible_user: <user>
+...
