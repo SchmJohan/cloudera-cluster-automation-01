@@ -31,6 +31,7 @@ ansible -i inventory.yml playbook.yml
 
 After starting the execution of the ansible playbook, you can monitor the import process in the Cloudera Manager.
 The Cloudera Manager WebUI can be accessed under:
+
 ---
 - http://<ip_address>:7180
 - user: admin
