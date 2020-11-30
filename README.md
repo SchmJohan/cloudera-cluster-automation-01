@@ -37,3 +37,11 @@ The Cloudera Manager WebUI can be accessed under:
 - user: admin
 - password: admin
 ---
+
+## Screenshots
+
+**All recent commands**
+<img src="screenshots/all_recent_commands.png" style="display: block; width: 70%; margin-left: auto; margin-right: auto; margin-bottom: 20px;" />
+
+**Import Process Details**
+<img src="screenshots/import_cluster_template_command.png" style="display: block; width: 70%; margin-left: auto; margin-right: auto;" />
